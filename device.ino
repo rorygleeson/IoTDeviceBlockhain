@@ -46,7 +46,7 @@ void loop() {
     
   //Initiate HTTP client
   HTTPClient http;
-  String request = "https://api-testnet.bscscan.com/api?module=account&action=balance&address=0x9999999&apikey=999999";
+  String request = "https://api-testnet.bscscan.com/api?module=account&action=balance&address=0x999999&apikey=999999";
   Serial.println("send request!");
   Serial.println(request);
 
@@ -119,12 +119,12 @@ void flashLed()
 {
   Serial.println("In flash LED !");
 
-  for (int i = 0; i <= 5; i++) 
+  for (int i = 0; i <= 20; i++) 
   {
-  digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(1000);                       // wait for a second
-  digitalWrite(LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW
-  delay(1000);   
+  digitalWrite(LED_BUILTIN, LOW);   // turn the LED on (HIGH is the voltage level)
+  delay(100);                       // wait for a second
+  digitalWrite(LED_BUILTIN, HIGH);    // turn the LED off by making the voltage LOW
+  delay(100);   
   }
                    
   
