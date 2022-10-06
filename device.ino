@@ -11,31 +11,12 @@ WiFiClientSecure net = WiFiClientSecure();
 //String for storing server response
 String response = "";
 String tokenBalance = "";
+String prevTokenBalance = "";
+int counter = 0;
 
 //JSON document
 DynamicJsonDocument doc(2048);
 
-void connectAWS()
-{
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-
-  Serial.println("Connecting to Wi-Fi");
-
-  while (WiFi.status() != WL_CONNECTED){
-    delay(500);
-    Serial.print(".");
-  }
-  
-  Serial.println(" ");
-  Serial.println("Connected to Wi-Fi !!");
-
-
-  
- 
-  
-  
-}
 
 
 
@@ -47,15 +28,25 @@ void setup() {
   
   // initialize digital pin LED_BUILTIN as an output.
   pinMode(LED_BUILTIN, OUTPUT);
+ // Turn LED OFF
+  digitalWrite(LED_BUILTIN, HIGH); 
   Serial.println("Setup done  !");
 
 }
 
 void loop() {
-  Serial.println("In loop, flash LED !");
+
+
+  
+  Serial.println("In loop!");
+  Serial.println("Counter is");
+  Serial.println(counter);
+
+
+    
   //Initiate HTTP client
   HTTPClient http;
-  String request = "https://api-testnet.bscscan.com/api?module=account&action=balance&address=0x99999&apikey= 9999999";
+  String request = "https://api-testnet.bscscan.com/api?module=account&action=balance&address=0x9999999&apikey=999999";
   Serial.println("send request!");
   Serial.println(request);
 
@@ -66,8 +57,6 @@ void loop() {
   http.GET();
   //Response from server
   response = http.getString();
-
-
   Serial.println("Response is");
   Serial.println(response);
   
@@ -82,33 +71,78 @@ void loop() {
   tokenBalance = doc["result"].as<char*>();
   Serial.println("Token Balance is");
   Serial.println(tokenBalance);
-  
 
+
+ 
   
   //Close connection  
   http.end();
+
+
+  
+
+  if(counter == 0)
+  {
+     Serial.println("Counter is zero, set prevToken");
+     prevTokenBalance = tokenBalance;
+     Serial.println("prevtokenBalance is");
+     Serial.println(prevTokenBalance);
+  }
+  else        // not the first pass. 
+  {
+    if(tokenBalance != prevTokenBalance)
+    {
+       Serial.println("Token balance not equal to previous balance, wallet balance has changed");
+       flashLed();  
+       prevTokenBalance = tokenBalance;
+    }
+    else
+    {
+       Serial.println("No change to wallet balance, do nothing");
+    }
+    
+  }
+
+
+
   //Wait two seconds for next joke
   delay(2000);
 
-  
-  // flashLed();                    
+   counter += 1;
+                    
 }
 
 
 
 
-void flashLed() {
+void flashLed() 
+{
   Serial.println("In flash LED !");
 
-  for (int i = 0; i <= 5; i++) {
+  for (int i = 0; i <= 5; i++) 
+  {
   digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
   delay(1000);                       // wait for a second
   digitalWrite(LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW
   delay(1000);   
-
-}
+  }
                    
   
+}
+
+void connectAWS()
+{
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  Serial.println("Connecting to Wi-Fi");
+  while (WiFi.status() != WL_CONNECTED){
+    delay(500);
+    Serial.print(".");
+  }
+  
+  Serial.println(" ");
+  Serial.println("Connected to Wi-Fi !!");
+
 }
 
 
